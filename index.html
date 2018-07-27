@@ -18,12 +18,18 @@
     <br><br>
     1. This tool uses your browser's cookies to authenticate. The segments will be created under the account ID you're currently logged into, of the buzz key you enter below. Ensure you're logged into the proper account beforehand.
     <br>
-    2. It is assumed that the "ID" will be in column 1, "name" in column 2, "description" in column 6, and "delta" in column 11. Each segment is assigned a TTL of 90 days.
+    2. You may specify which column number(s) to use as the segment's name below as a comma-delimited list. Multiple values will be joined with a space.
+    <br>
+    3. It is assumed that the "ID" will be in column 1, "description" in column 6, and "delta" in column 11. Each segment is assigned a TTL of 90 days.
   </div>
   <input type="file" id="file-input">
   <div id="options">
     <input type="text" id="buzz-key" placeholder="Buzz Key">
     <h4 id="buzz-key-display"></h4>
+    <strong>Column(s) To Use as Segment Name</strong><i> - enter column numbers as a comma-delimited list. Multiple values will be joined with a space.</i>
+    <br><br>
+    <input type="text" name="" value="2" id="col-name-input"><button id="parse">Parse</button>
+    <br><br>
     <button id='submit' style="display: none;">Create Segments</button>
   </div>
   <pre id="result"></pre>

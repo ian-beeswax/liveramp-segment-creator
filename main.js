@@ -5,32 +5,41 @@ var buzzKeyDisplay = document.getElementById("buzz-key-display");
 var result = document.getElementById("result");
 var submitButton = document.getElementById("submit");
 var table = document.getElementById("display-segments");
+var colNameInput = document.getElementById("col-name-input");
+var parseButton = document.getElementById("parse");
 var headers = ["Alternative ID", "Segment Name", "Segment Description"];
+var nameColumns = [2];
 var newSegments;
 var buzzKey = null;
 
+colNameInput.onkeyup = getNameColumns;
+fileInput.onchange = parse;
+parseButton.onclick = parse;
 buzzKeyInput.onkeyup = function(event) {
   buzzKey = event.target.value;
   buzzKeyDisplay.textContent = "Buzz Key: " + buzzKey;
 }
 
-fileInput.onchange = function(event) {
+function parse(event) {
   var fileList = fileInput.files;
   var csvFile = fileList[0];
-  Papa.parse(csvFile, {
-    complete: function(output) {
-      newSegments  = output.data.map(function(d) {
-        if (d[10] === "TRUE") {
-          return {
-            alternative_id: d[0],
-            segment_name: d[1],
-            segment_description: d[5]
-          };
-        }
-      });
-      displayOutput(newSegments);
-    }
-  });
+  if (nameColumns.length === 0) { alert("Please specify a column to use as segment name."); return; }
+  if (csvFile) {
+    Papa.parse(csvFile, {
+      complete: function(output) {
+        newSegments  = output.data.map(function(d) {
+          if (d[10] === "TRUE") {
+            return {
+              alternative_id: d[0],
+              segment_name: nameColumns.map(function(c) { return d[c]; }).join(" "),
+              segment_description: d[5]
+            };
+          }
+        });
+        displayOutput(newSegments);
+      }
+    });
+  }
 }
 
 function createSegment(id, name, desc) {
@@ -68,7 +77,7 @@ function displayOutput(newSegments) {
 function createSegments() {
   result.textContent = "";
   var invalid = /\W/g.test(buzzKey);
-  if (buzzKey != null && buzzKey != undefined && !invalid) {
+  if (buzzKey != null && buzzKey != '' && !invalid) {
     submitButton.removeEventListener("click", createSegments);
     submitButton.style.display = "none";
     newSegments.forEach(function(d) {
@@ -77,4 +86,17 @@ function createSegments() {
   } else {
     alert("Please enter a valid buzz key.")
   }
+}
+
+function getNameColumns(event) {
+  event.target.value.split(".").join("");
+  nameColumns = event.target.value.split(",").map(function(c) {
+    if (!isNaN(c) && Number(c) >= 1) { return Number(c) - 1; }
+    else if (Number(c) < 1) { return; }
+    else { alert(c + " is not a valid number.") }
+  });
+  nameColumns = nameColumns.filter(function(c) {
+    if (c !== undefined) return c;
+  });
+  console.log("segment name column(s): " + nameColumns);
 }

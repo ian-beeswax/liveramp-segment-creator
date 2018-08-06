@@ -8,7 +8,7 @@ var table = document.getElementById("display-segments");
 var colNameInput = document.getElementById("col-name-input");
 var parseButton = document.getElementById("parse");
 var headers = ["Alternative ID", "Segment Name", "Segment Description"];
-var nameColumns = [2];
+var nameColumns = [1];
 var newSegments;
 var buzzKey = null;
 
@@ -23,7 +23,7 @@ buzzKeyInput.onkeyup = function(event) {
 function parse(event) {
   var fileList = fileInput.files;
   var csvFile = fileList[0];
-  if (nameColumns.length === 0) { alert("Please specify a column to use as segment name."); return; }
+  if (nameColumns.length === 0) { alert("Please specify a valid column to use as segment name."); return; }
   if (csvFile) {
     Papa.parse(csvFile, {
       complete: function(output) {
@@ -92,11 +92,12 @@ function getNameColumns(event) {
   event.target.value.split(".").join("");
   nameColumns = event.target.value.split(",").map(function(c) {
     if (!isNaN(c) && Number(c) >= 1) { return Number(c) - 1; }
-    else if (Number(c) < 1) { return; }
+    else if (Number(c) < 0 || c == undefined || c == "") { return; }
     else { alert(c + " is not a valid number.") }
   });
   nameColumns = nameColumns.filter(function(c) {
-    if (c !== undefined) return c;
+    if (c !== undefined) { return true; }
+    else { return false; }
   });
-  console.log("segment name column(s): " + nameColumns);
+  console.log("segment name column index(s): ", nameColumns);
 }
